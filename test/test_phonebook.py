@@ -2,85 +2,223 @@ import pytest
 
 from src.phonebook import Phonebook
 
-
 class TestPhonebook:
 
-    @pytest.mark.parametrize("test_data", [("Fulano", "1982304736"), ("Ciclano", "1992324352334")])
-    def test_add_contact_success(self, test_data):
-        # Setup
+    #Validando o sucesso do método add
+    def test_add_nome_sucesso(self):
+        # SETUP
         phonebook = Phonebook()
+        resultado_esperado = "Numero adicionado"
 
-        # Chamada
-        resultado = phonebook.add(*test_data)
+        # CHAMADA
+        resultado = phonebook.add("Fulano", "12345678")
 
-        # Validacao
-        assert resultado == "Numero adicionado"
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
 
-    @pytest.mark.parametrize("test_data",["Fu#lano", "@fulano", "f!lano", "fula%no", "la$ndo" ])
-    def test_add_contact_special_character(self, test_data):
-        # Setup
+    # Validando a mensagem de nome invalido do método add
+    @pytest.mark.parametrize("test_data", ["Fu#lano", "Fulan@", "Fu!ano", "Fulan%", "Fulano$"])
+    def test_add_nome_invalido(self, test_data):
+        # SETUP
         phonebook = Phonebook()
+        resultado_esperado = "Nome invalido"
 
-        # Chamada
-        resultado = phonebook.add(test_data, "1982304736")
+        # CHAMADA
+        resultado = phonebook.add(test_data, "(84)988974488")
 
-        # Validacao
-        assert  resultado == "Nome invalido"
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
 
-    @pytest.mark.parametrize("test_data",[19912131415, 3.6888888, [], {}])
-    def test_add_contact_invalid_number(self, test_data):
-        # Setup
+    # Validando a mensagem de numero invalido do método add
+    @pytest.mark.parametrize("test_data",["ABCDEFG", "----", None])
+    def test_add_numero_invalido(self, test_data):
+        # SETUP
         phonebook = Phonebook()
+        resultado_esperado = "Numero invalido"
 
-        # Chamada
-        resultado = phonebook.add("Fulaninho", test_data)
+        # CHAMADA
+        resultado = phonebook.add("Fulano", test_data)
 
-        # Validacao
-        assert resultado == "Numero invalido"
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
 
-    def test_add_contact_that_already_exist_in_db(self):
-        # Setup
+    # Validando a mensagem de nome ja cadastrado metodo add
+    def test_add_nomes_iguais(self):
+        #SETUP
         phonebook = Phonebook()
-        phonebook.add("Fulaninho", "19912345678")
+        phonebook.add("Fulano", "12345678")
+        resultado_esperado = "Nome ja cadastrado"
 
-        # Chamada
-        resultado = phonebook.add("Fulaninho", "19912345678")
+        #CHAMADA
+        phonebook.add("Fulano", "12345678")
+        resultado = phonebook.add("Fulano", "12345678")
 
-        # Validacao
-        assert resultado == "Nome ja existe"
+        #VALIDAÇÃO
+        assert resultado == resultado_esperado
 
-    def test_lookup_contact_success(self):
-        # Setup
+#Validando o sucesso do método lookup
+    def test_lookup_nome_sucesso(self):
+        # SETUP
         phonebook = Phonebook()
-        phonebook.add("Fulaninho", "19912345678")
+        phonebook.add("Fulano", "12345678")
+        resultado_esperado = "12345678"
 
-        # Chamada
-        resultado = phonebook.lookup("Fulaninho")
+        # CHAMADA
+        resultado = phonebook.lookup("Fulano")
 
-        # Validacao
-        assert resultado == "19912345678"
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
 
-    @pytest.mark.parametrize("test_data", ["Fu#lano", "@fulano", "f!lano", "fula%no", "la$ndo"])
-    def test_lookup_contact_special_character(self, test_data):
-        # Setup
+# Validando a mensagem de nome invalido do método lookup
+    @pytest.mark.parametrize("test_data", ["Fu#lano", "Fulan@", "Fu!ano", "Fulan%", "Fulano$"])
+    def test_lookup_nome_invalido(self, test_data):
+        # SETUP
         phonebook = Phonebook()
-        phonebook.add("Fulaninho", "19912345678")
+        phonebook.add("Fulano", "12345678")
+        resultado_esperado = "Nome invalido"
 
-        # Chamada
-        resultado = phonebook.add(test_data, "1982304736")
+        # CHAMADA
+        resultado = phonebook.lookup(test_data)
 
-        # Validacao
-        assert resultado == "Nome invalido"
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
 
-
-    def test_get_names_success(self):
-        # Setup
+    #Validando o sucesso do método get_names
+    def test_get_names_sucesso(self):
+        # SETUP
         phonebook = Phonebook()
-        phonebook.add("Fulaninho", "19912345678")
-        phonebook.add("Ciclaninho", "19912345678")
+        phonebook.add("Fulano", "12345678")
+        resultado_esperado = ['POLICIA', 'Fulano']
 
-        # Chamada
+        # CHAMADA
         resultado = phonebook.get_names()
 
-        assert isinstance(resultado, type(phonebook.entries.keys()))
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
 
+    #Validando o sucesso do método get_numbers
+    def test_get_numbers_sucesso(self):
+        # SETUP
+        phonebook = Phonebook()
+        phonebook.add("Fulano", "1234567")
+        resultado_esperado = ['190', '1234567']
+
+        # CHAMADA
+        resultado = phonebook.get_numbers()
+
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
+
+    # Validando o sucesso do método clear
+    def test_clear_sucesso(self):
+        # SETUP
+        phonebook = Phonebook()
+        phonebook.add("Fulano", "12345678")
+        resultado_esperado = "phonebook limpado"
+
+        # CHAMADA
+        resultado = phonebook.clear()
+
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
+
+    # Validando o sucesso do método search
+    def test_seach_sucesso(self):
+        # SETUP
+        phonebook = Phonebook()
+        phonebook.add("Fulano", "12345678")
+        resultado_esperado = [{'12345678', 'Fulano'}]
+
+        # CHAMADA
+        resultado = phonebook.search("Fulano")
+
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
+
+        # Validando o sucesso do método sorted
+
+    def test_sorted_sucesso(self):
+        # SETUP
+        phonebook = Phonebook()
+        phonebook.add("Bruno", "12345678")
+        phonebook.add("Alexandre", "1234567")
+        phonebook.add("Claudio", "123456789")
+        resultado_esperado = ['Alexandre', 'Bruno', 'Claudio', 'POLICIA']
+
+        # CHAMADA
+        resultado = phonebook.get_phonebook_sorted()
+
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
+
+        # Validando o sucesso do método reverse
+
+    def test_reverse_sucesso(self):
+        # SETUP
+        phonebook = Phonebook()
+        phonebook.add("Bruno", "12345678")
+        phonebook.add("Alexandre", "1234567")
+        phonebook.add("Claudio", "123456789")
+        resultado_esperado = ['POLICIA', 'Claudio', 'Bruno', 'Alexandre']
+
+        # CHAMADA
+        resultado = phonebook.get_phonebook_reverse()
+
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
+
+    def test_delete_sucesso(self):
+        # SETUP
+        phonebook = Phonebook()
+        phonebook.add("Fulano", "12345678")
+        resultado_esperado = "Numero deletado"
+
+
+        # CHAMADA
+        resultado = phonebook.delete("Fulano")
+
+        # VALIDAÇÃO
+        assert resultado == resultado_esperado
+
+    def test_change_number_success(self):
+        # SETUP
+        phonebook = Phonebook()
+        phonebook.add("Fulaninho", "19912345678")
+
+        # CHAMADA
+        resultado = phonebook.change_number("Fulaninho", "19987654321")
+
+        # VALIDAÇÃO
+        assert (resultado == "Numero alterado" and
+                phonebook.entries["Fulaninho"] == "19987654321")
+
+    def test_change_number_not_found(self):
+        # SETUP
+        phonebook = Phonebook()
+
+        # CHAMADA
+        resultado = phonebook.change_number("Fulaninho", "19987654321")
+
+        # VALIDAÇÃO
+        assert resultado == "Contato nao encontrado"
+
+    def test_get_name_by_number_success(self):
+        # SETUP
+        phonebook = Phonebook()
+        phonebook.add("Fulaninho", "19912345678")
+
+        # CHAMADA
+        resultado = phonebook.get_name_by_number("19912345678")
+
+        # VALIDAÇÃO
+        assert resultado == "Fulaninho"
+
+    def test_get_name_by_number_not_found(self):
+        # SETUP
+        phonebook = Phonebook()
+
+        # CHAMADA
+        resultado = phonebook.get_name_by_number("19912345678")
+
+        # VALIDAÇÃO
+        assert resultado == "Numero nao encontrado"
