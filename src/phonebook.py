@@ -128,8 +128,7 @@ class Phonebook:
         return "Contato nao encontrado"
 
     def get_name_by_number(self, number):
-        number = number
-        for name, phone_number in self.entries.items():
-            if phone_number == number:
+        for name in self.entries:
+            if self.entries[name] == number:
                 return name
         return "Numero nao encontrado"
